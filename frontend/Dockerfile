@@ -22,7 +22,7 @@ RUN npm install -g serve
 
 COPY --from=build /app/dist ./dist
 
-ENV PORT=10000
-EXPOSE 10000
+ENV PORT=3000
+EXPOSE 3000
 
 CMD ["sh", "-c", "API_URL=${VITE_API_URL:-${REACT_APP_API_URL:-http://localhost:5000}}; printf 'window.__APP_CONFIG__={API_URL:\"%s\"};\n' \"$API_URL\" > dist/config.js; serve -s dist -l ${PORT}"]

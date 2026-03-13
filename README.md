@@ -76,10 +76,12 @@ Use your student ID as the image tag (example: `02190108`).
 1. Create backend web service from existing Docker Hub image.
 2. Set backend env vars in Render dashboard:
    - `PORT=5000`
-   - `DB_PATH=./data/todos.db`
-   - `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` (if using managed DB)
+   - `DB_PATH=/var/data/todos.db`
+   - Add a persistent disk mounted at `/var/data` (size `1 GB` is enough for this assignment)
+   - Backend Docker image is already aligned with these defaults (`PORT=5000`, `DB_PATH=/var/data/todos.db`)
 3. Create frontend web service from existing Docker Hub image.
 4. Set frontend env vars:
+   - `PORT=3000`
    - `VITE_API_URL=https://<your-backend-service>.onrender.com`
    - `REACT_APP_API_URL=https://<your-backend-service>.onrender.com`
    - (either one is fine; `VITE_API_URL` is preferred)
