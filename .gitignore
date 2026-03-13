@@ -1,0 +1,11 @@
+node_modules
+.env
+**/.env
+backend/node_modules
+frontend/node_modules
+
+# Build output
+frontend/dist
+
+# Local DB data
+backend/data/*.db
