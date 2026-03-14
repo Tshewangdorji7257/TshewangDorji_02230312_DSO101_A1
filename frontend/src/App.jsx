@@ -105,49 +105,107 @@ export default function App() {
     }
   }
 
+  const completedCount = tasks.filter((task) => task.completed).length;
+  const pendingCount = tasks.length - completedCount;
+
   return (
-    <main className="container">
-      <h1>Simple To-Do List</h1>
+    <main className="app-shell">
+      <div className="bg-shape bg-shape-one" />
+      <div className="bg-shape bg-shape-two" />
 
-      <form onSubmit={addTask} className="add-form">
-        <input
-          value={newTaskTitle}
-          onChange={(event) => setNewTaskTitle(event.target.value)}
-          placeholder="Enter a task"
-        />
-        <button type="submit">Add</button>
-      </form>
+      <section className="todo-panel">
+        <header className="panel-header">
+          <p className="eyebrow">Daily Planner</p>
+          <h1>Design-First To-Do</h1>
+          <p className="subtitle">Plan focused work and keep momentum all day.</p>
 
-      {error && <p className="error">{error}</p>}
+          <div className="stats">
+            <span className="stat-pill">{tasks.length} total</span>
+            <span className="stat-pill">{pendingCount} pending</span>
+            <span className="stat-pill">{completedCount} done</span>
+          </div>
+        </header>
 
-      <ul className="task-list">
-        {tasks.map((task) => (
-          <li key={task.id} className="task-item">
-            <input
-              type="checkbox"
-              checked={task.completed}
-              onChange={() => toggleComplete(task)}
-            />
+        <form onSubmit={addTask} className="add-form">
+          <input
+            value={newTaskTitle}
+            onChange={(event) => setNewTaskTitle(event.target.value)}
+            placeholder="What do you want to get done?"
+          />
+          <button type="submit" className="btn btn-primary">
+            Add task
+          </button>
+        </form>
 
-            {editingTaskId === task.id ? (
-              <>
+        {error && <p className="error">{error}</p>}
+
+        {tasks.length === 0 ? (
+          <div className="empty-state">
+            <p>No tasks yet. Add your first one to get started.</p>
+          </div>
+        ) : (
+          <ul className="task-list">
+            {tasks.map((task) => (
+              <li key={task.id} className="task-item">
                 <input
-                  value={editingTitle}
-                  onChange={(event) => setEditingTitle(event.target.value)}
+                  className="task-check"
+                  type="checkbox"
+                  checked={task.completed}
+                  onChange={() => toggleComplete(task)}
                 />
-                <button onClick={() => saveEdit(task.id)}>Save</button>
-                <button onClick={() => setEditingTaskId(null)}>Cancel</button>
-              </>
-            ) : (
-              <>
-                <span className={task.completed ? "done" : ""}>{task.title}</span>
-                <button onClick={() => startEdit(task)}>Edit</button>
-                <button onClick={() => deleteTask(task.id)}>Delete</button>
-              </>
-            )}
-          </li>
-        ))}
-      </ul>
+
+                {editingTaskId === task.id ? (
+                  <>
+                    <input
+                      className="task-input"
+                      value={editingTitle}
+                      onChange={(event) => setEditingTitle(event.target.value)}
+                    />
+                    <div className="task-actions">
+                      <button
+                        type="button"
+                        className="btn btn-save"
+                        onClick={() => saveEdit(task.id)}
+                      >
+                        Save
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-cancel"
+                        onClick={() => setEditingTaskId(null)}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <span className={task.completed ? "task-title done" : "task-title"}>
+                      {task.title}
+                    </span>
+                    <div className="task-actions">
+                      <button
+                        type="button"
+                        className="btn btn-edit"
+                        onClick={() => startEdit(task)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-delete"
+                        onClick={() => deleteTask(task.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </main>
   );
 }
