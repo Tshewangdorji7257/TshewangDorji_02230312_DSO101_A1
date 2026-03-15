@@ -2,12 +2,15 @@
 
 ## Continuous Integration and Continuous Deployment
 
-**Student Name:** Tshewang Dorji
+**Student Name:** Tshewang Dorji 
+
 **Student Number:** 02230312
-**Course:** DSO101 – Continuous Integration and Continuous Deployment
+
+**Module:** DSO101 – Continuous Integration and Continuous Deployment
+
 **Assignment:** To-Do List Web Application Deployment
 
----
+---  
 
 # 1. Introduction
 
@@ -135,7 +138,7 @@ I built the backend Docker image using the following command:
 ```
 docker build -t tshewang7/backend-todo:02230312 .
 ```
-![alt text](<Screenshot 2026-03-13 183806.png>)
+![alt text](<Asset/Screenshot 2026-03-13 183806.png>)
 
 ---
 
@@ -146,7 +149,8 @@ After building the image, I pushed it to Docker Hub:
 ```
 docker push tshewang7/backend-todo:02230312
 ```
-![alt text](<Screenshot 2026-03-13 183816.png>)
+![alt text](<Asset/Screenshot 2026-03-13 183816.png>)
+
 
 This allowed the image to be publicly available for deployment.
 
@@ -173,9 +177,9 @@ DB_HOST=sqlite
 ```
 
 Render then pulled the Docker image and deployed the backend service.
-![alt text](image-1.png)
-![alt text](<Screenshot 2026-03-13 184058.png>)
-![alt text](image.png)
+![alt text](Asset/image-1.png)
+![alt text](<Asset/Screenshot 2026-03-13 184058.png>)
+![alt text](Asset/image.png)
 
 ---
 
@@ -224,8 +228,8 @@ CMD ["serve", "-s", "dist", "-l", "3000"]
 docker build -t tshewang7/frontend-todo:02230312 .
 docker push tshewang7/frontend-todo:02230312
 ```
-![alt text](<Screenshot 2026-03-13 183856.png>)
-![alt text](<Screenshot 2026-03-13 183928.png>)
+![alt text](<Asset/Screenshot 2026-03-13 183856.png>)
+![alt text](<Asset/Screenshot 2026-03-13 183928.png>)
 ---
 
 ## 5.7 Deploying Frontend on Render
@@ -240,10 +244,14 @@ VITE_API_URL=https://backend-todo-02230312.onrender.com
 ```
 
 This allows the frontend to communicate with the deployed backend API.
-![alt text](image-2.png)
-![alt text](<Screenshot 2026-03-13 184206.png>)
-![alt text](<Screenshot 2026-03-13 185341.png>)
-![alt text](image-3.png)
+![alt text](Asset/image-2.png)
+![alt text](<Asset/Screenshot 2026-03-13 184206.png>)
+![alt text](<Asset/Screenshot 2026-03-13 185341.png>)
+![alt text](Asset/image-3.png)
+
+## Docker
+![alt text](<Asset/Screenshot 2026-03-13 184306.png>)
+![alt text](<Asset/Screenshot 2026-03-15 091338.png>)
 
 ---
 
