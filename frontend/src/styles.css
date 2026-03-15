@@ -250,6 +250,40 @@ input {
   gap: 8px;
 }
 
+.pagination {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.btn-page {
+  background: #edf4f5;
+  color: #204f53;
+  padding: 8px 12px;
+  border: 1px solid rgba(13, 139, 142, 0.24);
+}
+
+.btn-page.active {
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  color: #fff;
+  border-color: transparent;
+}
+
+.btn-page:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .done {
   text-decoration: line-through;
   opacity: 0.58;

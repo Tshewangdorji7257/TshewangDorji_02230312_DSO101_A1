@@ -12,11 +12,14 @@ const API_URL =
   "http://localhost:5000";
 
 export default function App() {
+  const TASKS_PER_PAGE = 5;
+
   const [tasks, setTasks] = useState([]);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editingTitle, setEditingTitle] = useState("");
   const [error, setError] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   async function fetchTasks() {
     setError("");
@@ -107,6 +110,15 @@ export default function App() {
 
   const completedCount = tasks.filter((task) => task.completed).length;
   const pendingCount = tasks.length - completedCount;
+  const totalPages = Math.max(1, Math.ceil(tasks.length / TASKS_PER_PAGE));
+  const pageStart = (currentPage - 1) * TASKS_PER_PAGE;
+  const visibleTasks = tasks.slice(pageStart, pageStart + TASKS_PER_PAGE);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   return (
     <main className="app-shell">
@@ -144,8 +156,9 @@ export default function App() {
             <p>No tasks yet. Add your first one to get started.</p>
           </div>
         ) : (
-          <ul className="task-list">
-            {tasks.map((task) => (
+          <>
+            <ul className="task-list">
+              {visibleTasks.map((task) => (
               <li key={task.id} className="task-item">
                 <input
                   className="task-check"
@@ -202,8 +215,47 @@ export default function App() {
                   </>
                 )}
               </li>
-            ))}
-          </ul>
+              ))}
+            </ul>
+
+            {tasks.length > TASKS_PER_PAGE && (
+              <nav className="pagination" aria-label="Task pagination">
+                <button
+                  type="button"
+                  className="btn btn-page"
+                  onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </button>
+
+                <div className="page-numbers">
+                  {Array.from({ length: totalPages }, (_, index) => {
+                    const page = index + 1;
+                    return (
+                      <button
+                        key={page}
+                        type="button"
+                        className={page === currentPage ? "btn btn-page active" : "btn btn-page"}
+                        onClick={() => setCurrentPage(page)}
+                      >
+                        {page}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  type="button"
+                  className="btn btn-page"
+                  onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </button>
+              </nav>
+            )}
+          </>
         )}
       </section>
     </main>
