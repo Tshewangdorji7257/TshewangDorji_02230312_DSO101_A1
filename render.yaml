@@ -4,10 +4,10 @@ services:
     env: docker
     dockerfilePath: ./backend/Dockerfile
     autoDeploy: true
-    disks:
-      - name: todo-db-data
-        mountPath: /var/data
-        sizeGB: 1
+    disk:
+      name: todo-db-data
+      mountPath: /var/data
+      sizeGB: 1
     envVars:
       - key: PORT
         value: 5000
