@@ -2,13 +2,18 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-COPY backend/package*.json ./
+# Copy only package files from backend directory
+COPY ./backend/package*.json ./
+
+# Install production dependencies
 RUN npm install --omit=dev --legacy-peer-deps
 
-COPY backend . .
+# Copy application source code from backend directory
+COPY ./backend/src ./src
+COPY ./backend/data ./data
 
 ENV PORT=5000
-ENV DB_PATH=/var/data/todos.db
+ENV DB_PATH=/tmp/todos.db
 
 EXPOSE 5000
 
