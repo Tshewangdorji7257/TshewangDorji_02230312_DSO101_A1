@@ -10,7 +10,9 @@ RUN npm install --omit=dev --legacy-peer-deps
 
 # Copy application source code from backend directory
 COPY ./backend/src ./src
-COPY ./backend/data ./data
+
+# Create data directory for database
+RUN mkdir -p /app/data
 
 ENV PORT=5000
 ENV DB_PATH=/tmp/todos.db
