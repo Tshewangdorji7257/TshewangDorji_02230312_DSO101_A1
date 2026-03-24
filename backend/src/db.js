@@ -23,15 +23,8 @@ export async function initDb() {
   try {
     console.log("Loading SQL.js...");
     
-    // Get the path to the WASM file from node_modules
-    const wasmBinary = await fs.promises.readFile(
-      new URL('../node_modules/sql.js/dist/sql-wasm.wasm', import.meta.url)
-    );
-    
-    // Initialize SQL.js with the WASM binary
-    SQL = await initSqlJs({
-      wasmBinary: wasmBinary
-    });
+    // Simple initialization - let sql.js find the WASM file automatically
+    SQL = await initSqlJs();
     
     console.log("SQL.js loaded successfully");
     console.log(`Using database path: ${fullPath}`);
