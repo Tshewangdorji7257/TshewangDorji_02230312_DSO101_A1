@@ -2,10 +2,10 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY backend/package*.json ./
 RUN npm install --omit=dev --legacy-peer-deps
 
-COPY . .
+COPY backend . .
 
 ENV PORT=5000
 ENV DB_PATH=/var/data/todos.db

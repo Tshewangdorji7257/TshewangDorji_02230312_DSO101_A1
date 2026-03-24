@@ -2,10 +2,10 @@ FROM node:18-alpine AS build
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY frontend/package*.json ./
 RUN npm install --legacy-peer-deps
 
-COPY . .
+COPY frontend . .
 
 # Accept build argument for API URL with default fallback
 ARG VITE_API_URL=http://localhost:5000

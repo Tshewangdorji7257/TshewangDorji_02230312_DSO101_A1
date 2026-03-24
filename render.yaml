@@ -4,7 +4,6 @@ services:
     env: docker
     plan: free
     dockerfilePath: ./backend/Dockerfile
-    buildContext: ./backend
     autoDeploy: true
     envVars:
       - key: PORT
@@ -17,7 +16,6 @@ services:
     env: docker
     plan: free
     dockerfilePath: ./frontend/Dockerfile
-    buildContext: ./frontend
     autoDeploy: true
     envVars:
       - key: PORT
