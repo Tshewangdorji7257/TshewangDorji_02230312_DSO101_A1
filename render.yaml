@@ -21,6 +21,6 @@ services:
       - key: PORT
         value: 3000
       - key: VITE_API_URL
-        sync: false
+        value: https://be-todo.onrender.com
       - key: REACT_APP_API_URL
-        sync: false
+        value: https://be-todo.onrender.com

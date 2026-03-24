@@ -306,52 +306,179 @@ todo-app
 
 ## render.yaml Configuration
 
+The `render.yaml` file defines the multi-service deployment configuration for both frontend and backend services:
+
 ```yaml
 services:
   - type: web
     name: be-todo
     env: docker
+    plan: free
     dockerfilePath: ./backend/Dockerfile
     autoDeploy: true
-    disks:
-      - name: todo-db-data
-        mountPath: /var/data
-        sizeGB: 1
     envVars:
       - key: PORT
         value: 5000
       - key: DB_PATH
-        value: /var/data/todos.db
+        value: /tmp/todos.db
 
   - type: web
     name: fe-todo
     env: docker
+    plan: free
     dockerfilePath: ./frontend/Dockerfile
     autoDeploy: true
     envVars:
       - key: PORT
         value: 3000
       - key: VITE_API_URL
-        sync: false
+        value: https://be-todo.onrender.com
       - key: REACT_APP_API_URL
-        sync: false
+        value: https://be-todo.onrender.com
 ```
 
-This file defines both the frontend and backend services and allows them to be deployed together.
+### Key Configuration Details:
 
-Whenever a **new commit is pushed to GitHub**, Render automatically rebuilds and redeploys the application.
+- **type: web** - Specifies this is a web service
+- **env: docker** - Uses Docker for deployment
+- **autoDeploy: true** - Enables automatic deployment on Git commits
+- **dockerfilePath** - Path to the Dockerfile for each service
+- **envVars** - Environment variables passed to the service at runtime
+
+### Important Notes:
+
+1. **Backend Service (`be-todo`)**:
+   - Listens on port 5000
+   - Uses temporary storage for SQLite database at `/tmp/todos.db`
+
+2. **Frontend Service (`fe-todo`)**:
+   - Listens on port 3000
+   - **VITE_API_URL** must point to the backend service URL (https://be-todo.onrender.com)
+   - This environment variable is used during the Docker build process to configure the API endpoint
 
 ---
 
-# 8. Continuous Integration and Deployment
+## Steps to Deploy Using Render Blueprint
 
-By integrating GitHub with Render:
+### Step 1: Connect GitHub Repository to Render
 
-* Each **Git commit triggers a new build**
-* Docker images are rebuilt automatically
-* The application is redeployed without manual intervention
+1. Log in to [Render Dashboard](https://dashboard.render.com)
+2. Click **"New +"** and select **"Blueprint"**
 
-This process demonstrates the concept of **Continuous Integration and Continuous Deployment (CI/CD)**.
+![Step 1: Create New Blueprint](Asset/step1-blueprint.png)
+
+3. Select **"Connect a repository"** and authorize your GitHub account
+4. Select the repository containing your code
+
+### Step 2: Configure Blueprint
+
+1. Render automatically detects the `render.yaml` file
+2. Review the services configuration
+3. Update any environment variables if needed (e.g., API_URL)
+
+![Step 2: Blueprint Configuration](Asset/step2-config.png)
+
+### Step 3: Deploy
+
+1. Click **"Deploy"** to start the deployment process
+2. Render will:
+   - Clone the repository
+   - Build Docker images for each service
+   - Deploy both frontend and backend services
+
+![Step 3: Deployment in Progress](Asset/step3-deploying.png)
+
+### Step 4: Verify Deployment
+
+1. Once deployment completes, you'll see the service URLs:
+   - Backend: `https://be-todo.onrender.com`
+   - Frontend: `https://fe-todo.onrender.com`
+
+2. Click the frontend URL to access the application
+
+![Step 4: Deployment Complete](Asset/step4-success.png)
+
+---
+
+## Automatic Deployment on Git Push
+
+With `autoDeploy: true` configured:
+
+1. **Trigger**: When you push a new commit to GitHub
+   ```bash
+   git add .
+   git commit -m "Update application"
+   git push origin main
+   ```
+
+2. **Process**: Render automatically:
+   - Detects the new commit
+   - Builds new Docker images
+   - Redeploys the services
+
+3. **Result**: Your application is updated without any manual intervention
+
+---
+
+## Troubleshooting Common Issues
+
+### Issue 1: Frontend cannot connect to backend
+
+**Solution**: Ensure `VITE_API_URL` environment variable in render.yaml points to the correct backend service URL (e.g., `https://be-todo.onrender.com`)
+
+### Issue 2: Build fails with npm errors
+
+**Solution**:
+- Check that `package.json` dependencies are up to date
+- Verify Docker image Node.js version compatibility
+- Ensure `package-lock.json` is committed to the repository
+
+### Issue 3: Environment variables not loading
+
+**Solution**:
+- For frontend: Environment variables must be passed at **build time** (configured in `render.yaml`)
+- For backend: Environment variables are applied at **runtime**
+- Restart services if manual changes are made
+
+---
+
+# 8. Continuous Integration and Continuous Deployment (CI/CD)
+
+This project demonstrates a complete **CI/CD pipeline** using GitHub and Render:
+
+## CI/CD Workflow
+
+```
+Developer commits code
+         ↓
+Git push to GitHub
+         ↓
+Render webhook triggered
+         ↓
+Clone repository
+         ↓
+Build Docker images
+         ↓
+Deploy services
+         ↓
+Application updated
+```
+
+## How It Works:
+
+1. **Source Control**: Code is pushed to GitHub repository
+2. **Trigger**: Render receives a webhook notification of the new commit
+3. **Build**: Docker images are built based on Dockerfiles and render.yaml
+4. **Deploy**: Services are deployed with updated code
+5. **Automatic**: No manual intervention required
+
+## Benefits:
+
+- **Automation**: Eliminates manual deployment steps
+- **Speed**: Changes are deployed within minutes
+- **Reliability**: Consistent deployment process
+- **Feedback**: Immediate feedback if builds fail
+- **Scalability**: Easy to manage multiple services
 
 ---
 
