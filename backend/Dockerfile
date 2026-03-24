@@ -11,6 +11,9 @@ RUN npm install --omit=dev --legacy-peer-deps
 # Copy application source code from backend directory
 COPY ./backend/src ./src
 
+# Copy WASM file from node_modules (required by sql.js)
+COPY ./backend/node_modules/sql.js/dist/sql-wasm.wasm ./node_modules/sql.js/dist/
+
 # Ensure tmp directory exists and is writable
 RUN mkdir -p /tmp && chmod 777 /tmp
 
