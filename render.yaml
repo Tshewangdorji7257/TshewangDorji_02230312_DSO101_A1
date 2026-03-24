@@ -17,6 +17,7 @@ services:
   - type: web
     name: fe-todo
     env: docker
+    plan: free
     dockerfilePath: ./frontend/Dockerfile
     autoDeploy: true
     envVars:
