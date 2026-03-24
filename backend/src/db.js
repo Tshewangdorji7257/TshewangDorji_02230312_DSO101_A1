@@ -6,7 +6,7 @@ import { fileURLToPath } from "url";
 dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dbPath = process.env.DB_PATH || "/tmp/todos.json";
+const dbPath = process.env.DB_PATH || "./data/todos.db";
 
 // Ensure directory exists
 const dbDir = path.dirname(dbPath);
