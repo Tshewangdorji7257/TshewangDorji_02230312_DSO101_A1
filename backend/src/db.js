@@ -22,7 +22,12 @@ export let db = null;
 export async function initDb() {
   try {
     console.log("Loading SQL.js...");
-    SQL = await initSqlJs();
+    
+    // Initialize SQL.js with locateFile for WASM
+    SQL = await initSqlJs({
+      locateFile: (filename) => `https://sql.js.org/dist/${filename}`
+    });
+    
     console.log("SQL.js loaded successfully");
     console.log(`Using database path: ${fullPath}`);
 

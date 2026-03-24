@@ -9,19 +9,24 @@ const app = express();
 const PORT = Number(process.env.PORT || 5000);
 
 // Configure CORS to allow requests from frontend
-const corsOptions = {
-  origin: "*", // Allow all origins
+app.use(cors({
+  origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type"],
+  allowedHeaders: ["Content-Type", "Accept"],
   credentials: false
-};
+}));
 
-app.use(cors(corsOptions));
 app.use(express.json());
+
+// Middleware to log all requests
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  next();
+});
 
 // Health check endpoint
 app.get("/health", (_req, res) => {
-  res.json({ ok: true });
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
 // Helper to run query and get all rows
@@ -145,22 +150,57 @@ app.delete("/tasks/:id", (req, res) => {
   }
 });
 
+// 404 handler
+app.use((_req, res) => {
+  res.status(404).json({ error: "Endpoint not found" });
+});
+
+// Error handling middleware
+app.use((err, _req, res, _next) => {
+  console.error("Error:", err);
+  res.status(500).json({ error: "Internal server error" });
+});
+
 async function start() {
   try {
-    console.log("Initializing database...");
-    await initDb();
-    console.log("Database initialized successfully");
+    console.log("=== Backend Server Startup ===");
+    console.log(`Environment: ${process.env.NODE_ENV || 'production'}`);
+    console.log(`Port: ${PORT}`);
     
-    app.listen(PORT, "0.0.0.0", () => {
-      console.log(`✓ Backend server running on port ${PORT}`);
+    console.log("\nInitializing database...");
+    await initDb();
+    console.log("✓ Database initialized successfully\n");
+    
+    const server = app.listen(PORT, "0.0.0.0", () => {
+      console.log("=== Server Ready ===");
+      console.log(`✓ Server running on http://0.0.0.0:${PORT}`);
       console.log(`✓ CORS enabled for all origins`);
-      console.log(`✓ Database path: ${process.env.DB_PATH}`);
+      console.log(`✓ Database: ${process.env.DB_PATH || './data/todos.db'}`);
+      console.log("============================\n");
     });
+
+    // Handle server errors
+    server.on("error", (error) => {
+      console.error("Server error:", error);
+      process.exit(1);
+    });
+
   } catch (error) {
-    console.error("Failed to start server:", error);
-    console.error("Error details:", error.message);
+    console.error("=== Startup Failed ===");
+    console.error("Error:", error.message);
+    console.error("Stack:", error.stack);
     process.exit(1);
   }
 }
+
+// Global error handlers
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
+});
+
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught Exception:", error);
+  process.exit(1);
+});
 
 start();
