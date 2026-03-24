@@ -8,8 +8,21 @@ dotenv.config();
 const app = express();
 const PORT = Number(process.env.PORT || 5000);
 
-app.use(cors());
+// Configure CORS to allow requests from frontend
+const corsOptions = {
+  origin: "*", // Allow all origins
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type"],
+  credentials: false
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
+
+// Health check endpoint
+app.get("/health", (_req, res) => {
+  res.json({ ok: true });
+});
 
 // Helper to run query and get all rows
 function dbAll(sql) {
@@ -39,10 +52,6 @@ function dbRun(sql) {
   db.run(sql);
   saveDb();
 }
-
-app.get("/health", (_req, res) => {
-  res.json({ ok: true });
-});
 
 app.get("/tasks", (_req, res) => {
   try {
