@@ -20,32 +20,53 @@ let SQL;
 export let db = null;
 
 export async function initDb() {
-  SQL = await initSqlJs();
+  try {
+    console.log("Loading SQL.js...");
+    SQL = await initSqlJs();
+    console.log("SQL.js loaded successfully");
+    console.log(`Using database path: ${fullPath}`);
 
-  // Load existing DB from file or create new
-  if (fs.existsSync(fullPath)) {
-    const data = fs.readFileSync(fullPath);
-    db = new SQL.Database(data);
-  } else {
-    db = new SQL.Database();
+    // Load existing DB from file or create new
+    if (fs.existsSync(fullPath)) {
+      console.log("Loading existing database file...");
+      const data = fs.readFileSync(fullPath);
+      db = new SQL.Database(data);
+      console.log("Database loaded from file");
+    } else {
+      console.log("Creating new database...");
+      db = new SQL.Database();
+      console.log("New database created");
+    }
+
+    // Create table
+    console.log("Creating tasks table...");
+    db.run(`
+      CREATE TABLE IF NOT EXISTS tasks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        completed INTEGER NOT NULL DEFAULT 0,
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    console.log("Tasks table created");
+
+    saveDb();
+    console.log("Database initialization complete");
+  } catch (error) {
+    console.error("Database initialization error:", error);
+    throw error;
   }
-
-  // Create table
-  db.run(`
-    CREATE TABLE IF NOT EXISTS tasks (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      title TEXT NOT NULL,
-      completed INTEGER NOT NULL DEFAULT 0,
-      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-    );
-  `);
-
-  saveDb();
 }
 
 export function saveDb() {
-  const data = db.export();
-  const buffer = Buffer.from(data);
-  fs.writeFileSync(fullPath, buffer);
+  try {
+    const data = db.export();
+    const buffer = Buffer.from(data);
+    fs.writeFileSync(fullPath, buffer);
+    console.log(`Database saved to ${fullPath}`);
+  } catch (error) {
+    console.error("Error saving database:", error);
+    throw error;
+  }
 }

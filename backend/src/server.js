@@ -147,12 +147,18 @@ app.delete("/tasks/:id", (req, res) => {
 
 async function start() {
   try {
+    console.log("Initializing database...");
     await initDb();
-    app.listen(PORT, () => {
-      console.log(`Backend is running on http://localhost:${PORT}`);
+    console.log("Database initialized successfully");
+    
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`✓ Backend server running on port ${PORT}`);
+      console.log(`✓ CORS enabled for all origins`);
+      console.log(`✓ Database path: ${process.env.DB_PATH}`);
     });
   } catch (error) {
     console.error("Failed to start server:", error);
+    console.error("Error details:", error.message);
     process.exit(1);
   }
 }
