@@ -8,6 +8,16 @@ dotenv.config();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dbPath = process.env.DB_PATH || "/tmp/todos.json";
 
+// Ensure directory exists
+const dbDir = path.dirname(dbPath);
+if (!fs.existsSync(dbDir)) {
+  try {
+    fs.mkdirSync(dbDir, { recursive: true });
+  } catch (err) {
+    console.warn(`⚠️  Could not create directory ${dbDir}, will use /tmp`);
+  }
+}
+
 let tasks = [];
 let nextId = 1;
 
@@ -41,8 +51,15 @@ export async function initDb() {
 
 function saveDb() {
   try {
+    // Ensure directory exists before writing
+    const dir = path.dirname(dbPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    
     const data = JSON.stringify({ tasks, nextId }, null, 2);
     fs.writeFileSync(dbPath, data, "utf-8");
+    console.log(`✓ Database saved to ${dbPath}`);
   } catch (error) {
     console.error("❌ Error saving database:", error.message);
     throw error;
