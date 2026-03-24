@@ -5,8 +5,8 @@ WORKDIR /app
 # Copy only package files from backend directory
 COPY ./backend/package*.json ./
 
-# Install production dependencies (includes sql.js with WASM)
-RUN npm install --legacy-peer-deps
+# Install dependencies (all, to ensure WASM binary is included)
+RUN npm install
 
 # Copy application source code from backend directory
 COPY ./backend/src ./src
@@ -16,6 +16,7 @@ RUN mkdir -p /tmp && chmod 777 /tmp
 
 ENV PORT=5000
 ENV DB_PATH=/tmp/todos.db
+ENV NODE_ENV=production
 
 EXPOSE 5000
 

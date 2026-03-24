@@ -22,11 +22,37 @@ export let db = null;
 export async function initDb() {
   try {
     console.log("Loading SQL.js...");
+    console.log(`Current working directory: ${process.cwd()}`);
     
-    // Simple initialization - let sql.js find the WASM file automatically
-    SQL = await initSqlJs();
+    // Try multiple possible WASM paths
+    const wasmPaths = [
+      path.join(process.cwd(), 'node_modules/sql.js/dist/sql-wasm.wasm'),
+      '/app/node_modules/sql.js/dist/sql-wasm.wasm',
+      path.join(__dirname, '../node_modules/sql.js/dist/sql-wasm.wasm')
+    ];
     
-    console.log("SQL.js loaded successfully");
+    let wasmBinary = null;
+    let wasmPath = null;
+    
+    for (const tryPath of wasmPaths) {
+      console.log(`Trying WASM path: ${tryPath}`);
+      if (fs.existsSync(tryPath)) {
+        console.log(`✓ Found WASM at: ${tryPath}`);
+        wasmBinary = fs.readFileSync(tryPath);
+        wasmPath = tryPath;
+        break;
+      }
+    }
+    
+    if (!wasmBinary) {
+      console.log("WASM file not found in any expected location, using default locateFile...");
+      SQL = await initSqlJs();
+    } else {
+      console.log("Loading WASM from binary...");
+      SQL = await initSqlJs({ wasmBinary });
+    }
+    
+    console.log("✓ SQL.js loaded successfully");
     console.log(`Using database path: ${fullPath}`);
 
     // Load existing DB from file or create new
@@ -34,11 +60,11 @@ export async function initDb() {
       console.log("Loading existing database file...");
       const data = fs.readFileSync(fullPath);
       db = new SQL.Database(data);
-      console.log("Database loaded from file");
+      console.log("✓ Database loaded from file");
     } else {
       console.log("Creating new database...");
       db = new SQL.Database();
-      console.log("New database created");
+      console.log("✓ New database created");
     }
 
     // Create table
@@ -52,12 +78,14 @@ export async function initDb() {
         updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
       );
     `);
-    console.log("Tasks table created");
+    console.log("✓ Tasks table created");
 
     saveDb();
-    console.log("Database initialization complete");
+    console.log("✓ Database initialization complete");
   } catch (error) {
-    console.error("Database initialization error:", error);
+    console.error("❌ Database initialization error:", error);
+    console.error("Error message:", error.message);
+    console.error("Error stack:", error.stack);
     throw error;
   }
 }
