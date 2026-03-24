@@ -5,15 +5,11 @@ services:
     plan: free
     dockerfilePath: ./backend/Dockerfile
     autoDeploy: true
-    disk:
-      name: todo-db-data
-      mountPath: /var/data
-      sizeGB: 1
     envVars:
       - key: PORT
         value: 5000
       - key: DB_PATH
-        value: /var/data/todos.db
+        value: /tmp/todos.db   # use temporary storage
 
   - type: web
     name: fe-todo
